@@ -9,6 +9,7 @@ import org.springframework.web.bind.annotation.ResponseBody;
 import org.springframework.web.servlet.mvc.method.annotation.ResponseEntityExceptionHandler;
 
 
+
 //import exceptions.ClienteException;
 
 @ControllerAdvice
@@ -16,28 +17,29 @@ public class ApiErrorsHandler extends ResponseEntityExceptionHandler{
 	
 	 @ExceptionHandler(Exception.class)
 	 @ResponseBody
-	  protected ResponseEntity<ErrorMessage> handleException(Exception ex) {
-		 ErrorMessage er = new ErrorMessage(ex.getMessage(),"esto es una prueba");
-		 return new ResponseEntity<ErrorMessage>(er, new HttpHeaders(), HttpStatus.NOT_FOUND);
+	  protected ResponseEntity<Message> handleException(Exception ex) {
+		 Message er = new Message(ex.getMessage());
+		 return new ResponseEntity<Message>(er, new HttpHeaders(), HttpStatus.NOT_FOUND);
 	  }
 	 
+	 @ExceptionHandler(RuntimeException.class)
+	 @ResponseBody
+	  protected ResponseEntity<Message> handleException(RuntimeException ex) {
+		 Message er = new Message(ex.getMessage());
+		 return new ResponseEntity<Message>(er, new HttpHeaders(), HttpStatus.NOT_FOUND);
+	  }
 }
 
-class ErrorMessage{
-	private String error;
-	private String detalle;
+class Message {
+	private String message;
 	
-	public ErrorMessage(String error, String detalle) {
+	public Message(String message) {
 		super();
-		this.error=error;
-		this.detalle=detalle;
+		this.message = message;
 	}
 	
 	public String getMessage() {
-		return this.error;
-	}
-	
-	public String getDetails() {
-		return this.detalle;
+		return this.message;
 	}
 }
+
