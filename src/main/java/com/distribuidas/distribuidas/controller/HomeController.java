@@ -32,178 +32,172 @@ import view.SubRubroView;
 
 @Controller
 public class HomeController {
-	
+
 	@GetMapping("/")
 	@ResponseBody
 	public String hola() {
 		return "Hola mundo";
 	}
-	
-	@PostMapping("/login")	
+
+	@PostMapping("/login")
 	@ResponseBody
-	/*Testeado*/
-	public String login (@RequestBody Map<String,String> request) throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
-		ObjectMapper mapper=new ObjectMapper();
+	/* Testeado */
+	public String login(@RequestBody Map<String, String> request)
+			throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
+		ObjectMapper mapper = new ObjectMapper();
 		String username = request.get("username");
 		String password = request.get("password");
 		Controlador.getInstancia().login(username, password);
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
-		
-	}
-	
 
-	@PostMapping("/cambioPassword")	
+	}
+
+	@PostMapping("/cambioPassword")
 	@ResponseBody
-	/*Testeado*/
-	public String cambioPassword (@RequestBody Map<String,String> request ) throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
-		ObjectMapper mapper=new ObjectMapper();	
+	/* Testeado */
+	public String cambioPassword(@RequestBody Map<String, String> request)
+			throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
+		ObjectMapper mapper = new ObjectMapper();
 		String username = request.get("username");
 		String password = request.get("password");
 		Controlador.getInstancia().cambioPassword(username, password);
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
-		
+
 	}
 
-	@PostMapping("/altaProducto")	
+	@PostMapping("/producto")
 	@ResponseBody
-	/*Testeado*/
-	public String altaProducto( /*Error en el negocio, cod de barra tipo numeric en db y String en codigo */
-			@RequestBody ProductoView pv
-			
-	) throws RubroException, SubRubroException, JsonProcessingException {
-		
-		ObjectMapper mapper=new ObjectMapper();
-		
+	/* Testeado */
+	/* Error en el negocio, cod de barra tipo numeric en db y String en codigo */
+	public String altaProducto(@RequestBody ProductoView pv)
+			throws RubroException, SubRubroException, JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
 		Controlador.getInstancia().altaProducto(pv);
-		
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
 	}
 
-	@PostMapping("/bajaProducto")	
+	@PostMapping("/bajaProducto")
 	@ResponseBody
-	/*Testeado*/
+	/* Testeado */
 	public String bajaProducto(@RequestBody ProductoView pv) throws ProductoException, JsonProcessingException {
-		ObjectMapper mapper=new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();
 		Controlador.getInstancia().bajaProducto(pv);
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
 	}
 
-	@PostMapping("/modificaProducto")	
+	@PostMapping("/modificaProducto")
 	@ResponseBody
-	/*Testeado*/ 
-	public String modificaProducto(//el modificaProducto que no modifica en el negocio
+	/* Testeado */
+	public String modificaProducto(// el modificaProducto que no modifica en el negocio
 			@RequestBody ProductoView pv
-			
+
 	) throws ProductoException, JsonProcessingException {
-		ObjectMapper mapper=new ObjectMapper();
+		ObjectMapper mapper = new ObjectMapper();
 		Controlador.getInstancia().modificaProducto(pv);
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
 	}
-	
-	@PostMapping("/crearPedido") 
-	/*Testeado*/
-	public @ResponseBody String crearPedido(@RequestBody Map<String,String> request) throws ClienteException, JsonProcessingException {
-		ObjectMapper mapper=new ObjectMapper();
+
+	@PostMapping("/pedido")
+	/* Testeado */
+	public @ResponseBody String crearPedido(@RequestBody Map<String, String> request)
+			throws ClienteException, JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
 		String cuit = request.get("cuit");
-		//request.forEach((k,v) -> System.out.println("Key: " + k + ": Value: " + v));
+		// request.forEach((k,v) -> System.out.println("Key: " + k + ": Value: " + v));
 		int pnro = Controlador.getInstancia().crearPedido(cuit);
 		return mapper.writeValueAsString("Numero de pedido: " + pnro);
-		
+
 	}
-	
+
 	@PostMapping("/agregarProductoEnPedido")
-	/*Testeado*/
-	public @ResponseBody String agregarProductoEnPedido(
-			@RequestBody  Map<String,Integer> request
-	) throws PedidoException, ProductoException, JsonProcessingException{	
-		
-		ObjectMapper mapper=new ObjectMapper();
+	/* Testeado */
+	public @ResponseBody String agregarProductoEnPedido(@RequestBody Map<String, Integer> request)
+			throws PedidoException, ProductoException, JsonProcessingException {
+
+		ObjectMapper mapper = new ObjectMapper();
 		int numeroPedido = request.get("numeropedido");
 		int identificadorProducto = request.get("identificador");
 		int cantidad = request.get("cantidad");
 		Controlador.getInstancia().agregarProductoEnPedido(numeroPedido, identificadorProducto, cantidad);
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
 	}
-	
+
 	@PostMapping("/eliminarPedido")
 	@ResponseBody
-	/*Testeado*/
-	public String eliminarPedido(@RequestBody  Map<String,Integer> request ) throws JsonProcessingException{
-		ObjectMapper mapper=new ObjectMapper();
+	/* Testeado */
+	public String eliminarPedido(@RequestBody Map<String, Integer> request) throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
 		int numeroPedido = request.get("numeropedido");
 		Controlador.getInstancia().eliminarPedido(numeroPedido);
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
 	}
-	
+
 	@PostMapping("/facturarPedido")
 	@ResponseBody
-	/*Testeado*/
-	public String facturarPedido(@RequestBody Map<String,Integer> request) throws JsonProcessingException, PedidoException{
-		ObjectMapper mapper=new ObjectMapper();
+	/* Testeado */
+	public String facturarPedido(@RequestBody Map<String, Integer> request)
+			throws JsonProcessingException, PedidoException {
+		ObjectMapper mapper = new ObjectMapper();
 		int numero = request.get("numeropedido");
 		Controlador.getInstancia().facturarPedido(numero);
 		return mapper.writeValueAsString(HttpStatus.OK.toString());
 	}
-	
-	@GetMapping("/getPedidoById")
-	/*Testeado*/
-	public @ResponseBody String getPedidoById(@RequestParam(name="numeropedido", required = true) int numero) throws JsonProcessingException, PedidoException{
-		ObjectMapper mapper=new ObjectMapper();
+
+	@GetMapping("/pedidoById")
+	/* Testeado */
+	public @ResponseBody String getPedidoById(@RequestParam(name = "numeropedido", required = true) int numero)
+			throws JsonProcessingException, PedidoException {
+		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(Controlador.getInstancia().getPedidoById(numero));
 	}
 
-	@GetMapping("/getRubros")
-	/*Testeado*/
-	public @ResponseBody String getRubros() throws JsonProcessingException{
-		ObjectMapper mapper=new ObjectMapper();
+	@GetMapping("/rubros")
+	/* Testeado */
+	public @ResponseBody String getRubros() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(Controlador.getInstancia().getRubros());
 	}
-	
-	@GetMapping("/getSubRubros")
-	/*Testeado*/
-	public @ResponseBody String getSubRubros() throws JsonProcessingException{
-		ObjectMapper mapper=new ObjectMapper();
+
+	@GetMapping("/subRubros")
+	/* Testeado */
+	public @ResponseBody String getSubRubros() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(Controlador.getInstancia().getSubRubros());
 	}
-	
-	@GetMapping("/getProductos")
-	/*Testeado*/
-	public @ResponseBody String getProductos() throws JsonProcessingException{
-		ObjectMapper mapper=new ObjectMapper();
+
+	@GetMapping("/productos")
+	/* Testeado */
+	public @ResponseBody String getProductos() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
 		return mapper.writeValueAsString(Controlador.getInstancia().getProductos());
 	}
-	
-	@GetMapping("/getProductosByRubro")
-	/*Testeado*/
-	public @ResponseBody String getProductosByRubro(@RequestParam(name="codigo", required = true) int codigo) throws JsonProcessingException{
-		ObjectMapper mapper=new ObjectMapper();
+
+	@GetMapping("/productosByRubro")
+	/* Testeado */
+	public @ResponseBody String getProductosByRubro(@RequestParam(name = "codigo", required = true) int codigo)
+			throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
 		RubroView rubro = new RubroView(codigo, "", true);
 		List<ProductoView> pv = Controlador.getInstancia().getProductosByRubro(rubro);
-			
+
 		return mapper.writeValueAsString(pv);
 	}
-	
-	@GetMapping("/getProductosBySubRubro")
-	/*Testeado*/
-	public @ResponseBody String getProductosBySubRubro(@RequestParam(name="codigo", required = true) int codigo) throws JsonProcessingException{
-		ObjectMapper mapper=new ObjectMapper();
-		SubRubroView subrubro = new SubRubroView(codigo, "", null);	
+
+	@GetMapping("/productosBySubRubro")
+	/* Testeado */
+	public @ResponseBody String getProductosBySubRubro(@RequestParam(name = "codigo", required = true) int codigo)
+			throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		SubRubroView subrubro = new SubRubroView(codigo, "", null);
 		return mapper.writeValueAsString(Controlador.getInstancia().getProductosBySubRubro(subrubro));
-		
-		 
+
 	}
-	
-	@RequestMapping(value="/clientes", method=RequestMethod.GET)
-	/*Testeado*/
+
+	@RequestMapping(value = "/clientes", method = RequestMethod.GET)
+	/* Testeado */
 	public @ResponseBody String getClientes() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		Controlador controlador = Controlador.getInstancia();
 		List<ClienteView> clientes = controlador.getClientes();
-		/*if (clientes == null) {
-			return "Not results for /clientes";
-		} else {
-			return mapper.writeValueAsString(clientes);			
-		}*/
-		return mapper.writeValueAsString(clientes); //no importa si esta vacio o no, del msje a mostrar se encarga el front
-	}
+		return mapper.writeValueAsString(clientes);	}
 }
