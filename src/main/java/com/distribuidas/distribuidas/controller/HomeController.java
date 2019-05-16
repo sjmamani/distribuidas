@@ -3,14 +3,13 @@ package com.distribuidas.distribuidas.controller;
 import java.util.List;
 import java.util.Map;
 
-import org.springframework.http.HttpStatus;
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
+import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RequestMethod;
-import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.ResponseBody;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -26,6 +25,7 @@ import exceptions.RubroException;
 import exceptions.SubRubroException;
 import exceptions.UsuarioException;
 import view.ClienteView;
+import view.PedidoView;
 import view.ProductoView;
 import view.RubroView;
 import view.SubRubroView;
@@ -33,171 +33,144 @@ import view.SubRubroView;
 @Controller
 public class HomeController {
 
-	@GetMapping("/")
-	@ResponseBody
-	public String hola() {
-		return "Hola mundo";
-	}
-
 	@PostMapping("/login")
-	@ResponseBody
-	/* Testeado */
-	public String login(@RequestBody Map<String, String> request)
+	public @ResponseBody String login(@RequestBody Map<String, String> request)
 			throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
 		ObjectMapper mapper = new ObjectMapper();
-		String username = request.get("username");
+		String nombre = request.get("nombre");
 		String password = request.get("password");
-		Controlador.getInstancia().login(username, password);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
-
+		Controlador.getInstancia().login(nombre, password);
+		return mapper.writeValueAsString("Usuario logueado");
 	}
 
 	@PostMapping("/cambioPassword")
-	@ResponseBody
-	/* Testeado */
-	public String cambioPassword(@RequestBody Map<String, String> request)
+	public @ResponseBody String cambioPassword(@RequestBody Map<String, String> request)
 			throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
 		ObjectMapper mapper = new ObjectMapper();
 		String username = request.get("username");
 		String password = request.get("password");
 		Controlador.getInstancia().cambioPassword(username, password);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
-
+		return mapper.writeValueAsString("Contraseña modificada");
 	}
 
 	@PostMapping("/producto")
-	@ResponseBody
-	/* Testeado */
 	/* Error en el negocio, cod de barra tipo numeric en db y String en codigo */
-	public String altaProducto(@RequestBody ProductoView pv)
+	public @ResponseBody String altaProducto(@RequestBody ProductoView producto)
 			throws RubroException, SubRubroException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		Controlador.getInstancia().altaProducto(pv);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
+		Controlador.getInstancia().altaProducto(producto);
+		return mapper.writeValueAsString("Producto creado");
 	}
 
-	@PostMapping("/bajaProducto")
-	@ResponseBody
-	/* Testeado */
-	public String bajaProducto(@RequestBody ProductoView pv) throws ProductoException, JsonProcessingException {
+	@DeleteMapping("/producto/{id}")
+	public @ResponseBody String bajaProducto(@PathVariable int id) throws ProductoException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		Controlador.getInstancia().bajaProducto(pv);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
+		/** TODO */
+		ProductoView producto = new ProductoView(); // Haría falta un constructor que reciba un id
+		Controlador.getInstancia().bajaProducto(producto);
+		return mapper.writeValueAsString("Producto eliminado");
 	}
 
-	@PostMapping("/modificaProducto")
-	@ResponseBody
-	/* Testeado */
-	public String modificaProducto(// el modificaProducto que no modifica en el negocio
-			@RequestBody ProductoView pv
-
-	) throws ProductoException, JsonProcessingException {
+	@PutMapping("/producto/{id}")
+	public @ResponseBody String modificaProducto(@PathVariable int id)
+			throws ProductoException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		Controlador.getInstancia().modificaProducto(pv);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
+		ProductoView producto = new ProductoView(); // Haría falta un constructor que reciba un id
+		Controlador.getInstancia().modificaProducto(producto);
+		return mapper.writeValueAsString("Producto modificado");
 	}
-
-	@PostMapping("/pedido")
+	
 	/* Testeado */
-	public @ResponseBody String crearPedido(@RequestBody Map<String, String> request)
+	@PostMapping("/pedido/{cuit}")
+	public @ResponseBody String crearPedido(@PathVariable String cuit)
 			throws ClienteException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		String cuit = request.get("cuit");
-		// request.forEach((k,v) -> System.out.println("Key: " + k + ": Value: " + v));
 		int pnro = Controlador.getInstancia().crearPedido(cuit);
 		return mapper.writeValueAsString("Numero de pedido: " + pnro);
-
 	}
-
-	@PostMapping("/agregarProductoEnPedido")
+	
 	/* Testeado */
-	public @ResponseBody String agregarProductoEnPedido(@RequestBody Map<String, Integer> request)
+	@PostMapping("/agregarProductoEnPedido/{numero}/{id}/{cantidad}")
+	public @ResponseBody String agregarProductoEnPedido(@PathVariable int numero, @PathVariable int id, @PathVariable int cantidad)
 			throws PedidoException, ProductoException, JsonProcessingException {
-
 		ObjectMapper mapper = new ObjectMapper();
-		int numeroPedido = request.get("numeropedido");
-		int identificadorProducto = request.get("identificador");
-		int cantidad = request.get("cantidad");
-		Controlador.getInstancia().agregarProductoEnPedido(numeroPedido, identificadorProducto, cantidad);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
+		Controlador.getInstancia().agregarProductoEnPedido(numero, id, cantidad);
+		return mapper.writeValueAsString("Producto agregado");
 	}
-
-	@PostMapping("/eliminarPedido")
-	@ResponseBody
+	
 	/* Testeado */
-	public String eliminarPedido(@RequestBody Map<String, Integer> request) throws JsonProcessingException {
+	@DeleteMapping("/pedido/{numeroPedido}")
+	public @ResponseBody String eliminarPedido(@PathVariable int numeroPedido) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		int numeroPedido = request.get("numeropedido");
 		Controlador.getInstancia().eliminarPedido(numeroPedido);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
+		return mapper.writeValueAsString("Pedido eliminado");
 	}
-
-	@PostMapping("/facturarPedido")
-	@ResponseBody
+	
 	/* Testeado */
-	public String facturarPedido(@RequestBody Map<String, Integer> request)
+	@PostMapping("/facturarPedido/{numero}")
+	public @ResponseBody String facturarPedido(@PathVariable int numero)
 			throws JsonProcessingException, PedidoException {
 		ObjectMapper mapper = new ObjectMapper();
-		int numero = request.get("numeropedido");
 		Controlador.getInstancia().facturarPedido(numero);
-		return mapper.writeValueAsString(HttpStatus.OK.toString());
+		return mapper.writeValueAsString("Pedido facturado");
 	}
-
-	@GetMapping("/pedidoById")
+	
 	/* Testeado */
-	public @ResponseBody String getPedidoById(@RequestParam(name = "numeropedido", required = true) int numero)
+	@GetMapping("/pedido/{numero}")
+	public @ResponseBody String getPedidoById(@PathVariable int numero)
 			throws JsonProcessingException, PedidoException {
 		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(Controlador.getInstancia().getPedidoById(numero));
+		PedidoView pedido = Controlador.getInstancia().getPedidoById(numero);
+		return mapper.writeValueAsString(pedido);
 	}
-
-	@GetMapping("/rubros")
+	
 	/* Testeado */
+	@GetMapping("/rubros")
 	public @ResponseBody String getRubros() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(Controlador.getInstancia().getRubros());
+		List<RubroView> rubros = Controlador.getInstancia().getRubros();
+		return mapper.writeValueAsString(rubros);
 	}
-
-	@GetMapping("/subRubros")
+	
 	/* Testeado */
+	@GetMapping("/subRubros")
 	public @ResponseBody String getSubRubros() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(Controlador.getInstancia().getSubRubros());
+		List<SubRubroView> subRubros = Controlador.getInstancia().getSubRubros();
+		return mapper.writeValueAsString(subRubros);
 	}
-
-	@GetMapping("/productos")
+	
 	/* Testeado */
+	@GetMapping("/productos")
 	public @ResponseBody String getProductos() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		return mapper.writeValueAsString(Controlador.getInstancia().getProductos());
+		List<ProductoView> productos = Controlador.getInstancia().getProductos();
+		return mapper.writeValueAsString(productos);
 	}
-
-	@GetMapping("/productosByRubro")
+	
 	/* Testeado */
-	public @ResponseBody String getProductosByRubro(@RequestParam(name = "codigo", required = true) int codigo)
-			throws JsonProcessingException {
+	@GetMapping("/productosByRubro/{codigo}")
+	public @ResponseBody String getProductosByRubro(@PathVariable int codigo) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		RubroView rubro = new RubroView(codigo, "", true);
 		List<ProductoView> pv = Controlador.getInstancia().getProductosByRubro(rubro);
-
 		return mapper.writeValueAsString(pv);
 	}
-
-	@GetMapping("/productosBySubRubro")
+	
 	/* Testeado */
-	public @ResponseBody String getProductosBySubRubro(@RequestParam(name = "codigo", required = true) int codigo)
-			throws JsonProcessingException {
+	@GetMapping("/productosBySubRubro/{codigo}")
+	public @ResponseBody String getProductosBySubRubro(@PathVariable int codigo) throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
 		SubRubroView subrubro = new SubRubroView(codigo, "", null);
-		return mapper.writeValueAsString(Controlador.getInstancia().getProductosBySubRubro(subrubro));
-
+		List<ProductoView> productos = Controlador.getInstancia().getProductosBySubRubro(subrubro);
+		return mapper.writeValueAsString(productos);
 	}
-
-	@RequestMapping(value = "/clientes", method = RequestMethod.GET)
+	
 	/* Testeado */
+	@GetMapping("/clientes")
 	public @ResponseBody String getClientes() throws JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		Controlador controlador = Controlador.getInstancia();
-		List<ClienteView> clientes = controlador.getClientes();
-		return mapper.writeValueAsString(clientes);	}
+		List<ClienteView> clientes = Controlador.getInstancia().getClientes();
+		return mapper.writeValueAsString(clientes);
+	}
 }
