@@ -4,6 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.springframework.stereotype.Controller;
+import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
 import org.springframework.web.bind.annotation.GetMapping;
 import org.springframework.web.bind.annotation.PathVariable;
@@ -31,8 +32,10 @@ import view.RubroView;
 import view.SubRubroView;
 
 @Controller
+@CrossOrigin(origins = "http://localhost:3000")
 public class HomeController {
-
+	
+	/* Testeado */
 	@PostMapping("/login")
 	public @ResponseBody String login(@RequestBody Map<String, String> request)
 			throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
@@ -42,7 +45,7 @@ public class HomeController {
 		Controlador.getInstancia().login(nombre, password);
 		return mapper.writeValueAsString("Usuario logueado");
 	}
-
+	
 	@PostMapping("/cambioPassword")
 	public @ResponseBody String cambioPassword(@RequestBody Map<String, String> request)
 			throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
@@ -62,20 +65,19 @@ public class HomeController {
 		return mapper.writeValueAsString("Producto creado");
 	}
 
-	@DeleteMapping("/producto/{id}")
-	public @ResponseBody String bajaProducto(@PathVariable int id) throws ProductoException, JsonProcessingException {
+	/* Testeado */
+	@DeleteMapping("/producto")
+	public @ResponseBody String bajaProducto(@RequestBody ProductoView producto) throws ProductoException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		/** TODO */
-		ProductoView producto = new ProductoView(); // Haría falta un constructor que reciba un id
 		Controlador.getInstancia().bajaProducto(producto);
 		return mapper.writeValueAsString("Producto eliminado");
 	}
-
-	@PutMapping("/producto/{id}")
-	public @ResponseBody String modificaProducto(@PathVariable int id)
+	
+	/* Testeado */
+	@PutMapping("/producto")
+	public @ResponseBody String modificaProducto(@RequestBody ProductoView producto)
 			throws ProductoException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		ProductoView producto = new ProductoView(); // Haría falta un constructor que reciba un id
 		Controlador.getInstancia().modificaProducto(producto);
 		return mapper.writeValueAsString("Producto modificado");
 	}
