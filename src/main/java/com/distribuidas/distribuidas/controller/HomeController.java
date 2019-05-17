@@ -31,6 +31,14 @@ import view.ProductoView;
 import view.RubroView;
 import view.SubRubroView;
 
+/**
+ * TODOS LOS TESTS FUERON REALIZADOS CON POSTMAN
+ * 
+ * @author Joaquin Mamani y Nicolas Marquez - Aplicaciones Distribuidas 1C 2019
+ *
+ */
+
+
 @Controller
 @CrossOrigin(origins = "http://localhost:3000")
 public class HomeController {
@@ -46,6 +54,7 @@ public class HomeController {
 		return mapper.writeValueAsString("Usuario logueado");
 	}
 	
+	/* Testeado */
 	@PostMapping("/cambioPassword")
 	public @ResponseBody String cambioPassword(@RequestBody Map<String, String> request)
 			throws JsonProcessingException, LoginException, CambioPasswordException, UsuarioException {
@@ -109,7 +118,7 @@ public class HomeController {
 	}
 	
 	/* Testeado */
-	@PostMapping("/facturarPedido/{numero}")
+	@PutMapping("/facturarPedido/{numero}")
 	public @ResponseBody String facturarPedido(@PathVariable int numero)
 			throws JsonProcessingException, PedidoException {
 		ObjectMapper mapper = new ObjectMapper();
