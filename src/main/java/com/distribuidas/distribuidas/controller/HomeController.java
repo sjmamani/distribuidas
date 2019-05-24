@@ -135,6 +135,13 @@ public class HomeController {
 		return mapper.writeValueAsString(pedido);
 	}
 	
+	@GetMapping("/pedidos")
+	public @ResponseBody String getPedidos() throws JsonProcessingException {
+		ObjectMapper mapper = new ObjectMapper();
+		List<PedidoView> pedidos = Controlador.getInstancia().getPedidos();
+		return mapper.writeValueAsString(pedidos);
+	}
+	
 	/* Testeado */
 	@GetMapping("/rubros")
 	public @ResponseBody String getRubros() throws JsonProcessingException {
@@ -176,6 +183,13 @@ public class HomeController {
 		List<ProductoView> productos = Controlador.getInstancia().getProductosBySubRubro(subrubro);
 		return mapper.writeValueAsString(productos);
 	}
+	
+//	@GetMapping("/productos/{id}")
+//	public @ResponseBody String getProductoById(@PathVariable int id) {
+//		ObjectMapper mapper = new ObjectMapper();
+//		List<ProductoView> productos = Controlador.getInstancia().getProductosBySubRubro(subrubro);
+//		return mapper.writeValueAsString(productos);
+//	}
 	
 	/* Testeado */
 	@GetMapping("/clientes")
