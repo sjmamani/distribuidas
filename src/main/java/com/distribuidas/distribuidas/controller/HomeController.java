@@ -26,6 +26,7 @@ import exceptions.RubroException;
 import exceptions.SubRubroException;
 import exceptions.UsuarioException;
 import view.ClienteView;
+import view.ItemPedidoView;
 import view.PedidoView;
 import view.ProductoView;
 import view.RubroView;
@@ -40,7 +41,7 @@ import view.SubRubroView;
 
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(value = "http://localhost:3000")
 public class HomeController {
 	
 	/* Testeado */
@@ -96,8 +97,8 @@ public class HomeController {
 	public @ResponseBody String crearPedido(@PathVariable String cuit)
 			throws ClienteException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		int pnro = Controlador.getInstancia().crearPedido(cuit);
-		return mapper.writeValueAsString("Numero de pedido: " + pnro);
+		PedidoView pedido = Controlador.getInstancia().crearPedido(cuit);
+		return mapper.writeValueAsString(pedido);
 	}
 	
 	/* Testeado */
@@ -105,8 +106,8 @@ public class HomeController {
 	public @ResponseBody String agregarProductoEnPedido(@PathVariable int numero, @PathVariable int id, @PathVariable int cantidad)
 			throws PedidoException, ProductoException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		Controlador.getInstancia().agregarProductoEnPedido(numero, id, cantidad);
-		return mapper.writeValueAsString("Producto agregado");
+		ItemPedidoView item = Controlador.getInstancia().agregarProductoEnPedido(numero, id, cantidad);
+		return mapper.writeValueAsString(item);
 	}
 	
 	/* Testeado */
