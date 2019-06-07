@@ -40,7 +40,7 @@ import view.SubRubroView;
  */
 
 @Controller
-@CrossOrigin(value = "http://localhost:3000")
+@CrossOrigin(origins = "http://localhost:3000")
 public class HomeController {
 
 	/* Testeado */
