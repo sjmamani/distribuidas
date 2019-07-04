@@ -40,7 +40,7 @@ import view.SubRubroView;
  */
 
 @Controller
-@CrossOrigin(origins = "http://localhost:3000")
+@CrossOrigin(origins = "*")
 public class HomeController {
 
 	/* Testeado */
@@ -89,11 +89,11 @@ public class HomeController {
 	}
 
 	/* Testeado */
-	@DeleteMapping("/producto")
-	public @ResponseBody String bajaProducto(@RequestBody ProductoView producto)
+	@DeleteMapping("/producto/{id}")
+	public @ResponseBody String bajaProducto(@PathVariable int id)
 			throws ProductoException, JsonProcessingException {
 		ObjectMapper mapper = new ObjectMapper();
-		Controlador.getInstancia().bajaProducto(producto);
+		Controlador.getInstancia().bajaProducto(id);
 		return mapper.writeValueAsString("Producto eliminado");
 	}
 
